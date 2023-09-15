@@ -3,7 +3,7 @@ project:
   output-dir: docs
 
 website:
-  title: "Isaac Baron"
+  title: "Isaac s Baron"
   favicon: images/personal_logo.png
   navbar:
     left:
