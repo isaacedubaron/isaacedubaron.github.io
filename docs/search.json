@@ -25,21 +25,21 @@
     "href": "posts/Problem Set 1/index.html#what-are-the-7-basic-steps-of-machine-learning",
     "title": "Problem Set 1 | ",
     "section": "What are the 7 basic steps of machine learning?",
-    "text": "What are the 7 basic steps of machine learning?"
+    "text": "What are the 7 basic steps of machine learning?\n\nData Collection\nData Reprocessing\nSplitting the Data\nModel Selection\nModel Training\nModel Evaluation\nModel Deployment"
   },
   {
     "objectID": "posts/Problem Set 1/index.html#in-your-own-words-please-explain-the-bias-variance-tradeoff-in-supervised-machine-learning-and-make-sure-to-include-proper-terminology.",
     "href": "posts/Problem Set 1/index.html#in-your-own-words-please-explain-the-bias-variance-tradeoff-in-supervised-machine-learning-and-make-sure-to-include-proper-terminology.",
     "title": "Problem Set 1 | ",
     "section": "In your own words, please explain the bias-variance tradeoff in supervised machine learning and make sure to include proper terminology.",
-    "text": "In your own words, please explain the bias-variance tradeoff in supervised machine learning and make sure to include proper terminology."
+    "text": "In your own words, please explain the bias-variance tradeoff in supervised machine learning and make sure to include proper terminology.\nThe bias-variance trade-off: it refers to the balance that you need to strike between two sources of error when building a model: Bias: Bias is the error introduced by approximating a real-world problem, which may be complex, by a simplified model. High bias can lead to under fitting, where the model is too simple to capture the underlying patterns in the data. It results in poor performance on both the training and validation sets. Variance: Variance is the error introduced by the models sensitivity to small fluctuations or noise in the training data. High variance can lead to over fitting, where the model becomes too complex and fits the training data too closely. It performs well on the training data but poorly on the validation or test data. The goal in machine learning is to find a model that achieves a balance between bias and variance. This is because reducing bias often increases variance, and vice versa. The challenge is to select the right complexity of the model and fine-tune its parameters to minimize both bias and variance, resulting in a model that generalizes well to unseen data."
   },
   {
     "objectID": "posts/Problem Set 1/index.html#explain-in-your-own-words-why-cross-validation-is-important-and-useful.",
     "href": "posts/Problem Set 1/index.html#explain-in-your-own-words-why-cross-validation-is-important-and-useful.",
     "title": "Problem Set 1 | ",
     "section": "Explain, in your own words, why cross-validation is important and useful.",
-    "text": "Explain, in your own words, why cross-validation is important and useful.\nData Collection Data Preprocessing Splitting the Data Model Selection Model Training Model Evaluation Model Deployment The bias-variance tradeoff: it refers to the balance that you need to strike between two sources of error when building a model: Bias: Bias is the error introduced by approximating a real-world problem, which may be complex, by a simplified model. High bias can lead to underfitting, where the model is too simple to capture the underlying patterns in the data. It results in poor performance on both the training and validation sets. Variance: Variance is the error introduced by the models sensitivity to small fluctuations or noise in the training data. High variance can lead to overfitting, where the model becomes too complex and fits the training data too closely. It performs well on the training data but poorly on the validation or test data. The goal in machine learning is to find a model that achieves a balance between bias and variance. This is because reducing bias often increases variance, and vice versa. The challenge is to select the right complexity of the model and fine-tune its parameters to minimize both bias and variance, resulting in a model that generalizes well to unseen data. Cross-validation is essential machine because: Cross-validation provides a more robust estimate of a models performance compared to a single train-test split. It helps in assessing how well a model generalizes to different subsets of the data. Maximizing Data Utilization: By rotating through different subsets of the data as training and validation sets, cross-validation ensures that all available data is used for both training and evaluation, which is particularly important when the dataset is limited."
+    "text": "Explain, in your own words, why cross-validation is important and useful.\nCross-validation is essential machine because: Cross-validation provides a more robust estimate of a models performance compared to a single train-test split. It helps in assessing how well a model generalizes to different subsets of the data. Maximizing Data Utilization: By rotating through different subsets of the data as training and validation sets, cross-validation ensures that all available data is used for both training and evaluation, which is particularly important when the dataset is limited."
   },
   {
     "objectID": "posts/Demo Post 1/index.html",
@@ -81,7 +81,7 @@
     "href": "posts.html",
     "title": "Blog Posts",
     "section": "",
-    "text": "Problem Set 2\n\n\n\n\n\n\n\n\n\n\n \n\n\n\n\n  \n\n\n\n\nProblem Set 1 | \n\n\n\n\n\n\n\n\n\n\n\n\nSep 15, 2023\n\n\nIsaac Baron[Emailibaron01@hamline.edu. Position Student]\n\n\n\n\n\n\n  \n\n\n\n\nDemo Post 2\n\n\n\n\n\n\n\ndecision trees\n\n\nmachine learning\n\n\narrests\n\n\n\n\n\n\n\n\n\n\n\nSep 5, 2023\n\n\nJane Doe\n\n\n\n\n\n\n  \n\n\n\n\nDemo Post 1\n\n\n\n\n\n\n\nquarto\n\n\ncrisp-dm\n\n\nscatterplot\n\n\n\n\n\n\n\n\n\n\n\nSep 1, 2023\n\n\nJane Doe\n\n\n\n\n\n\nNo matching items"
+    "text": "Problem Set 2\n\n\n\n\n\n\n\n\n\n\n \n\n\n\n\n  \n\n\n\n\nProblem Set 1 | \n\n\n\n\n\n\n\n\n\n\n\n\nSep 15, 2023\n\n\nIsaac Baron [ibaron01@hamline.edu - Student ]\n\n\n\n\n\n\n  \n\n\n\n\nDemo Post 2\n\n\n\n\n\n\n\ndecision trees\n\n\nmachine learning\n\n\narrests\n\n\n\n\n\n\n\n\n\n\n\nSep 5, 2023\n\n\nJane Doe\n\n\n\n\n\n\n  \n\n\n\n\nDemo Post 1\n\n\n\n\n\n\n\nquarto\n\n\ncrisp-dm\n\n\nscatterplot\n\n\n\n\n\n\n\n\n\n\n\nSep 1, 2023\n\n\nJane Doe\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "projects.html",

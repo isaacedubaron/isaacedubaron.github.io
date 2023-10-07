@@ -1,7 +1,7 @@
 ---
 title: Problem Set 1 |
   ![](long_logo.png){width=4.5in}  
-author: Isaac Baron[**Email**ibaron01@hamline.edu. **Position** Student]
+author: Isaac Baron                      [**ibaron01@hamline.edu** **-** **Student** ]
 date: "9/15/2023"
 format: html
 ---
@@ -155,8 +155,18 @@ In this section, you will type your paragraph answers to the following questions
 
 ## What are the 7 basic steps of machine learning?
 
+1.  Data Collection
+2.   Data Reprocessing
+3.  Splitting the Data
+4.  Model Selection
+5.  Model Training
+6.  Model Evaluation
+7.  Model Deployment
+
 ## In your own words, please explain the bias-variance tradeoff in supervised machine learning and make sure to include proper terminology.
+
+The bias-variance trade-off: it refers to the balance that you need to strike between two sources of error when building a model: Bias: Bias is the error introduced by approximating a real-world problem, which may be complex, by a simplified model. High bias can lead to under fitting, where the model is too simple to capture the underlying patterns in the data. It results in poor performance on both the training and validation sets. Variance: Variance is the error introduced by the models sensitivity to small fluctuations or noise in the training data. High variance can lead to over fitting, where the model becomes too complex and fits the training data too closely. It performs well on the training data but poorly on the validation or test data. The goal in machine learning is to find a model that achieves a balance between bias and variance. This is because reducing bias often increases variance, and vice versa. The challenge is to select the right complexity of the model and fine-tune its parameters to minimize both bias and variance, resulting in a model that generalizes well to unseen data.
 
 ## Explain, in your own words, why cross-validation is important and useful.
 
-Data Collection Data Preprocessing Splitting the Data Model Selection Model Training Model Evaluation Model Deployment The bias-variance tradeoff: it refers to the balance that you need to strike between two sources of error when building a model: Bias: Bias is the error introduced by approximating a real-world problem, which may be complex, by a simplified model. High bias can lead to underfitting, where the model is too simple to capture the underlying patterns in the data. It results in poor performance on both the training and validation sets. Variance: Variance is the error introduced by the models sensitivity to small fluctuations or noise in the training data. High variance can lead to overfitting, where the model becomes too complex and fits the training data too closely. It performs well on the training data but poorly on the validation or test data. The goal in machine learning is to find a model that achieves a balance between bias and variance. This is because reducing bias often increases variance, and vice versa. The challenge is to select the right complexity of the model and fine-tune its parameters to minimize both bias and variance, resulting in a model that generalizes well to unseen data. Cross-validation is essential machine because: Cross-validation provides a more robust estimate of a models performance compared to a single train-test split. It helps in assessing how well a model generalizes to different subsets of the data. Maximizing Data Utilization: By rotating through different subsets of the data as training and validation sets, cross-validation ensures that all available data is used for both training and evaluation, which is particularly important when the dataset is limited.
+Cross-validation is essential machine because: Cross-validation provides a more robust estimate of a models performance compared to a single train-test split. It helps in assessing how well a model generalizes to different subsets of the data. Maximizing Data Utilization: By rotating through different subsets of the data as training and validation sets, cross-validation ensures that all available data is used for both training and evaluation, which is particularly important when the dataset is limited.
