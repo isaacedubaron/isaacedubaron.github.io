@@ -156,7 +156,7 @@ In this section, you will type your paragraph answers to the following questions
 ## What are the 7 basic steps of machine learning?
 
 1.  Data Collection
-2.   Data Reprocessing
+2.  Data Reprocessing
 3.  Splitting the Data
 4.  Model Selection
 5.  Model Training
