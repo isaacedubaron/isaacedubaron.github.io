@@ -66,7 +66,7 @@ print(str(USArrests))
 * Whenever you mention a column name, like "Assault", in your paragraph, surround the word with single back-ticks such as `Assault`. This will change the font for that word to monospace and make it look like code.
 -->
 ```
-The data set has 50 observations with four columns. These columns a `Murder`, `Assault`,`UrbanPop`, and `Rape`. The `Murder` variable is a numeric data type, as is the `Rape` variable. The `Assault` and `UrbanPop` variables and integers.
+The data set has 50 observations with four columns. These columns are `Murder`, `Assault`,`UrbanPop`, and `Rape`. The `Murder` variable is a numeric data type, as is the `Rape` variable. The `Assault` and `UrbanPop` variables are integers.
 
 ## Summary of Features
 
@@ -128,7 +128,7 @@ best to interpret any of these relationships and what they may or may
 not mean.
 -->
 ```
-There appears to be a positivly correlated relationship between *Murder* and *Assault*. The appears to also be a positivly correlated relationship between *UrbanPop* and the other three arrest variables *Murder*, *Assault*, and *Rape*.
+There appears to be a positively correlated relationship between *Murder* and *Assault*. The appears to also be a positively correlated relationship between *UrbanPop* and the other three arrest variables *Murder*, *Assault*, and *Rape*.
 
 ```{=html}
 <!--
@@ -150,8 +150,6 @@ the Murder part with the feature name as spelled in the dataset.
 | Rape         | `r mean(USArrests$Rape)`     |
 
 # Machine Learning Questions
-
-In this section, you will type your paragraph answers to the following questions presented below. Do your best to answer the questions after reading chapter 1 of the textbook and watching the assigned videos.
 
 ## What are the 7 basic steps of machine learning?
 
