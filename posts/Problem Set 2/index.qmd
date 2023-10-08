@@ -1,7 +1,9 @@
 ---
-title: "Problem Set 2"
+title: Problem Set 2 |
+  ![](Headshot.jpg){width=4.5in}  
+author: Isaac Baron                      [**ibaron01@hamline.edu** **-** **Student** ]
+date: "9/17/2023"
 format: html
-editor: visual
 ---
 
 Before getting started, we'll need to make sure the necessary packages installed and libraries loaded. Look at the list below and install if necessary before loading them.

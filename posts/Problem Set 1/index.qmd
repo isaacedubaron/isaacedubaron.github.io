@@ -1,6 +1,6 @@
 ---
 title: Problem Set 1 |
-  ![](long_logo.png){width=4.5in}  
+  ![](Headshot.jpg){width=4.5in}  
 author: Isaac Baron                      [**ibaron01@hamline.edu** **-** **Student** ]
 date: "9/15/2023"
 format: html
