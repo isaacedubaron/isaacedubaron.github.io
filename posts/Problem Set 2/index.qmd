@@ -262,3 +262,36 @@ bikes %>%
   ggplot(aes(x=rentals, y=pred)) +
   geom_point()
 ```
+
+**Step 7**
+
+**Visualize the actual rentals and the predicted rentals over time.**
+
+```{r}
+ggplot(bikes, aes(x = rentals)) +
+  geom_line(aes(y = rentals, color = "Actual Rentals"), linewidth = 1) +
+  geom_line(aes(y = pred, color = "Predicted Rentals"), linewidth = 1, linetype = "dashed") +
+  labs(title = "Actual vs. Predicted Bike Rentals Over Time",
+       x = "rentals",
+       y = "Rentals") +
+  scale_color_manual(values = c("Actual Rentals" = "blue", "Predicted Rentals" = "red")) +
+  theme_minimal()
+```
+
+**Step 8**
+
+**Discuss whether you think the features you have in the data make sense for learning to predict daily bike rentals.**
+
+I believe that the features represented in the data do make sense. The blue line which represents actual rentals is directly correlated to the predictions that are represented in red. The blue line fits within the predictions values for nearly the whole graph.
+
+**Step 9**
+
+**Discuss what is means in this case to train or \"fit\" a model to the data you prepared.**
+
+Fitting a model refers to the process of using a dataset to teach a model how to make predictions or decisions. The model learns patterns, relationships, and rules from the training data so that it can generalize and make predictions on new, unseen data. This applies to this problem set because we is converted all categorical variables into dummy variables. We used these dummy variables to make predictions.
+
+**Step 10**
+
+**Discuss which preparations you did were required to make the learning algorithm work, and which were not strictly required, but maybe are a good idea.**
+
+The preparations we did were create dummy variables. We needed to do this because the machine learning algorithm Lasso requires numerical inputs.
