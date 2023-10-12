@@ -1,0 +1,67 @@
+The National Veterans Organization (NVO) needs help analyzing donor responses to previous collection efforts. They'd like to improve the amount of responses they get, as well as the response rate. They've provided some historical data from their database that you can use to analyze and build a classification model predicting whether a person will respond to a mailing.  
+
+1\. Write a paragraph explaining why classification is the right approach for the NVO's problem.
+
+Classification is the right approach for the National Veterans Organization's (NVO) problem because it allows them to categorize potential donors into two distinct groups: those who are likely to respond to their mailing and those who are not. By predicting whether a person will respond to a mailing, the NVO can target their outreach efforts more effectively. This approach enables them to allocate their resources efficiently and personalize their communication strategies. With classification, they can identify individuals who are most receptive to their cause and tailor their messages and incentives accordingly.
+
+2\. Write a paragraph explaining how NVO could use the classifier you build to identify potential donors. Why could it be better than what they've been doing?
+
+The classifier built by NVO can be used to identify potential donors in a more efficient and targeted manner than their previous methods. By utilizing the classifier, NVO can prioritize individuals who are predicted to have a higher likelihood of responding to their mailings. This approach can save both time and resources by focusing on the most promising prospects, ensuring that their outreach efforts are more cost-effective. Instead of sending mail to a broad and undifferentiated audience, they can direct their campaigns to individuals with a higher probability of becoming donors, increasing the chances of successful fundraising.
+
+3\. Write a paragraph explaining which measures from the confusion matrix you'll use to evaluate the classifier performance and how they relate to important areas like mailer response rate, and maximizing donation opportunities.
+
+To evaluate the performance of the classifier, NVO should consider measures from the confusion matrix, particularly precision, recall, and the F1 score. Precision will help NVO understand what proportion of the predicted positive responses were indeed correct, ensuring that their resources are not wasted on false positives. Recall, on the other hand, will show how many of the actual donors they successfully captured, preventing missed opportunities. Maximizing donation opportunities is crucial for the NVO, and the F1 score, which balances precision and recall, provides a comprehensive measure of the classifier's effectiveness. These metrics help the NVO improve their mailer response rate by reducing false positives and false negatives, ultimately enhancing their fundraising success.
+
+*After perusing and cleaning the data, decide on the most useful features and build the two classification models - remembering to follow proper principles (i.e., data partitioning, cross validation, etc.).*
+
+4\. Build a logistic LASSO model using cross-validation on the training data to select the best �. View the coefficients at that chosen � and see what features are in the model.
+
+```{r}
+
+install.packages("glmnet")
+# Load necessary libraries
+library(readr)
+library(caret)
+library(glmnet)
+
+# Read the data
+donors <- read_csv("donors.csv")
+
+# Data Cleaning and Preprocessing (if not done already)
+
+# Data Partitioning
+set.seed(42) # for reproducibility
+trainIndex <- createDataPartition(donors$TARGET_B, p = 0.7, 
+                                  list = FALSE,
+                                  times = 1)
+trainData <- donors[trainIndex, ]
+testData <- donors[-trainIndex, ]
+
+# Create matrices for model training
+x_train <- model.matrix(TARGET_B ~ ., data = trainData)
+y_train <- trainData$TARGET_B
+x_test <- model.matrix(TARGET_B ~ ., data = testData)
+y_test <- testData$TARGET_B
+
+# Perform cross-validated LASSO logistic regression
+lasso_cv <- cv.glmnet(x_train, y_train, alpha = 1, family = "binomial")
+
+# Find the best lambda (smallest deviance)
+best_lambda <- lasso_cv$lambda.min
+
+# Build the final logistic LASSO model with the best lambda
+lasso_model <- glmnet(x_train, y_train, alpha = 1, family = "binomial", lambda = best_lambda)
+
+# View the coefficients for the features in the selected model
+coef(lasso_model)
+```
+
+5\. Build a decision tree model using cross-validation on the training data to select the best `cp` value. Use `rpart.plot()` to view the decision tree. What key features does it use?
+
+6\. Evaluate the performance on test data and look at and describe its performance according to your confusion matrix measures.
+
+7\. Create a ROC plot (with AUC) to compare the two model's performance and explain to NVO what the plot tells you.
+
+8\. Pick the best performing model, and view its precision recall chart and its cumulative gain chart.
+
+9\. Use the charts from parts 6 and 7 to describe how the model should perform for NVO and what it could mean if they do a mailer campaign for 50,000 people.
