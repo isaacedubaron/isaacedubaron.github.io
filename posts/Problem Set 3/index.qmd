@@ -9,22 +9,153 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+#### **Assignment**
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+1\. Create a new Rmarkdown document that will show case your data exploration, modeling, and error testing.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r}
+library(tidyverse)
+library(rpart)
+library(caret)
+library(GGally)
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+install.packages("rpart.plot")
+library(rpart.plot)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+2\. Explore the data and determine the number of variables and the quantity of any missing values. If values are missing, prescribe a plan to deal with the problem.
+
+```{r}
+Toycor <- read.csv("ToyotaCorolla.csv")
+str(Toycor)
+
+
+```
+
+```{r}
+missing_values <- colSums(is.na(Toycor))
+```
+
+3\. Analyze whether the Price variable is appropriate for a linear regression model and discuss its distribution. Are there any transformations that we might apply to the price variable?
+
+```{r}
+
+plot(Toycor$Price, Toycor$IndependentVariable, main = "Scatter Plot of Price vs. IndependentVariable")
+
+```
+
+```{r}
+Toycor$LogPrice <- log(Toycor$Price)
+
+```
+
+4\. Is there a relationship between any of the features in the data and the Price feature? Perform some exploratory analysis to determine some features that are related using a feature plot.
+
+```{r}
+Toycor = Toycor %>%
+  select(-Id, -Model, -Mfg_Month, -Cylinders)
+```
+
+```{r}
+Toycor_fct = Toycor %>%
+  select(-Price, -Age_08_04, -KM, -HP, -CC, -Quarterly_Tax, -Weight) %>%
+  mutate_all(.funs = factor)
+
+Toycor_num = Toycor %>%
+  select(Price, Age_08_04, KM, HP, CC, Quarterly_Tax, Weight)
+
+Toycor2 = bind_cols(Toycor_num, Toycor_fct)
+
+```
+
+```{r}
+Toycor2 %>%
+  keep(is.numeric) %>%
+  ggpairs()
+```
+
+```{r}
+correlation_mileage <- cor(Toycor$KM, Toycor$Price)
+correlation_age <- cor(Toycor$Age_08_04, Toycor$Price)
+correlation_Mfg_Year <- cor(Toycor$Mfg_Year, Toycor$Price)
+```
+
+```{r}
+library(ggplot2)
+
+ggplot(Toycor, aes(x = KM, y = Price)) +
+  geom_point() +
+  labs(title = "Scatter Plot of Price vs. KM")
+
+ggplot(Toycor, aes(x = Age_08_04, y = Price)) +
+  geom_point() +
+  labs(title = "Scatter Plot of Price vs. Age_08_04")
+
+ggplot(Toycor, aes(x = Mfg_Year, y = Price)) +
+  geom_point() +
+  labs(title = "Scatter Plot of Price vs. Mfg_Year")
+```
+
+```{r}
+lm1 = lm(Price ~ Age_08_04 + KM,
+         data = Toycor2)
+summary(lm1)
+
+```
+
+```{r}
+Toycor %>%
+  select(-Fuel_Type, -Color) %>%
+  cor() %>%
+  corrplot::corrplot(., number.cex=.2)
+```
+
+5\. Are there any predictor variables in the data that are potentially too strongly related to each other? Make sure to use reference any visualizations, tables, or numbers to show this.
+
+**Age_08_04** and **Price** are strongly negatively correlated. You can see this relationship in the scatter plot below. The negative slope of the trend line shows the negative correlation. The correlation of -0.877 between **Age_08_04** and **Price** is the only relationship that is potentially too strong.
+
+```{r}
+ggplot(Toycor, aes(x = Age_08_04, y = Price)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +  # Add a trendline (linear regression)
+  labs(title = "Scatter Plot of Price vs. Age_08_04")
+
+```
+
+6\. Partition your data into a training set with 70% of the observations and a testing set with the remaining 30%.
+
+```{r}
+set.seed(123)  
+trainIndex <- createDataPartition(Toycor$Price, p = 0.7, list = FALSE)
+train_data <- Toycor[trainIndex, ]
+test_data <- Toycor[-trainIndex, ]
+
+
+
+```
+
+7\. Based on your results and relationships in questions (4) and (5), build a regression tree model to predict car prices. With the data Toycor_data Make sure to conduct cross validation to evaluate the model and choose the best cost complexity parameter for this problem (use default values for minsplit, minbucket, maxdepth, etc. But choose grid of cp values to tune over). Use rpart.plot to view your tree and discuss its complexity, usefulness, etc. What role is pre-pruning and post-pruning playing here?
+
+```{r}
+dt1 = train(Price ~ .,
+            data = select(test_data, -Age_08_04),
+            method = "rpart",
+            trControl = trainControl(method = "none"),
+            metric = "RMSE")
+dt1
+```
+
+```{r}
+dt1 <- dt1
+
+rpart.plot:rpart.plot(dt1)
+
+```
+
+8\. Look at the feature importance (using permuted feature importance in "iml" package, with loss = "rmse" and compare = "ratio") and determine which features have the biggest effect, and which might be okay to remove.
+
+9\. Parsimony is about obtaining the simplest model possible, without oversimplifying. Remove a few of the less useful features and retrain / cross validate / tune your tree.
+
+10\. Use the model resulting from question 9 and test predictions on the testing data. Compare the cross validation error and and testing data. Spend some time interpreting what this prediction error means for your pricing model and its use for CorollaCrowd.
