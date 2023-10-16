@@ -511,28 +511,28 @@ Attaching package: 'Matrix'</code></pre>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>betamin</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>21 x 1 sparse Matrix of class "dgCMatrix"
-                     seg91
-intercept      7188.241247
-temperature     977.913810
-humidity      -2989.755533
-windspeed     -1863.339998
-season_Winter  -727.909032
-season_Spring   -95.984494
-season_Summer    12.909978
-season_Fall     301.456207
-holiday_0       437.471632
-holiday_1         .       
-weekday_0      -260.794743
-weekday_1       -96.389630
-weekday_2        -5.296943
-weekday_3         .       
-weekday_4         .       
-weekday_5         .       
-weekday_6        58.890335
-weather_1       256.135832
-weather_2         .       
-weather_3     -1658.716768
-temperature2   -529.867870</code></pre>
+                      seg76
+intercept      7.034803e+03
+temperature    9.669329e+02
+humidity      -2.776661e+03
+windspeed     -1.747421e+03
+season_Winter -7.025787e+02
+season_Spring -2.744094e+01
+season_Summer  5.663014e-01
+season_Fall    2.922998e+02
+holiday_0      3.503767e+02
+holiday_1     -9.256936e-11
+weekday_0     -2.017131e+02
+weekday_1     -5.172234e+01
+weekday_2      .           
+weekday_3      .           
+weekday_4      .           
+weekday_5      .           
+weekday_6      2.385002e+01
+weather_1      2.530664e+02
+weather_2      .           
+weather_3     -1.577724e+03
+temperature2  -4.948863e+02</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -547,6 +547,30 @@ temperature2   -529.867870</code></pre>
 <p><img src="index_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<p><strong>Step 7</strong></p>
+<p><strong>Visualize the actual rentals and the predicted rentals over time.</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(bikes, <span class="fu">aes</span>(<span class="at">x =</span> rentals)) <span class="sc">+</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> rentals, <span class="at">color =</span> <span class="st">"Actual Rentals"</span>), <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> pred, <span class="at">color =</span> <span class="st">"Predicted Rentals"</span>), <span class="at">linewidth =</span> <span class="dv">1</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Actual vs. Predicted Bike Rentals Over Time"</span>,</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"rentals"</span>,</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Rentals"</span>) <span class="sc">+</span></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Actual Rentals"</span> <span class="ot">=</span> <span class="st">"blue"</span>, <span class="st">"Predicted Rentals"</span> <span class="ot">=</span> <span class="st">"red"</span>)) <span class="sc">+</span></span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p><strong>Step 8</strong></p>
+<p><strong>Discuss whether you think the features you have in the data make sense for learning to predict daily bike rentals.</strong></p>
+<p>I believe that the features represented in the data do make sense. The blue line which represents actual rentals is directly correlated to the predictions that are represented in red. The blue line fits within the predictions values for nearly the whole graph.</p>
+<p><strong>Step 9</strong></p>
+<p><strong>Discuss what is means in this case to train or "fit" a model to the data you prepared.</strong></p>
+<p>Fitting a model refers to the process of using a dataset to teach a model how to make predictions or decisions. The model learns patterns, relationships, and rules from the training data so that it can generalize and make predictions on new, unseen data. This applies to this problem set because we is converted all categorical variables into dummy variables. We used these dummy variables to make predictions.</p>
+<p><strong>Step 10</strong></p>
+<p><strong>Discuss which preparations you did were required to make the learning algorithm work, and which were not strictly required, but maybe are a good idea.</strong></p>
+<p>The preparations we did were create dummy variables. We needed to do this because the machine learning algorithm Lasso requires numerical inputs.</p>
 
 
 </section>

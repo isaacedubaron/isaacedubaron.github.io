@@ -1,0 +1,29 @@
+---
+title:  House Price Modeling and Bubbles
+  ![](Headshot.jpg){width=4.5in}  
+author: Isaac Baron                      [**ibaron01@hamline.edu** **-** **Student** ]
+date: "10/15/2023"
+format: html
+---
+
+You are a new intern with Local Home Builder's Association (LHBA) and were asked to analyze the state of the local housing market, which has suffered during a recent economic crisis. You were given two data sets: the Pre-Crisis data contains information on 1,978 single-family homes sold during the one-year period before the burst of the "housing bubble," and the Post-Crisis data contains information on 1,657 single-family homes sold during the one-year period after the burst of the housing bubble. In addition, there is a set of 2,000 observations designated as a test set corresponding to homes currently for sale. Because the homes in the test set have not yet been sold, each of these 2,000 observations has an artificial value of zero for the sale price.
+
+LHBA initially started out as just a home builder's association which not only connected builders with contractors to handle construction, but facilitated loans to local residents wanted to own their own home. Initially, their part in helping people experience the dream of owning their own home was accomplished through supporting the construction of new homes. However, as real estate prices have increased and as populations have grown, LHBA has expanded to facilitate other community-based home purchase loans (like a credit union). As a result, LHBA's revenue model has become reliant on the purchase, sale, lending, and construction of homes.
+
+Critical LHBA decisions depend upon the ultimate price a home will sell for on the real estate market. Therefore, having good predictions as to the expected selling price of a home is necessary to make consistently profitable decisions. LHBA executives are not all in-sync when it comes to the nature and methods of pricing homes. Historically, LHBA has based their decisions off the county-assessed value of the land and building which constitute a property. County assessed values include a wide-spectrum of factors and is information readily used by banks as well. Consequently, executives have felt it reasonable to think of these values as the true (non-bubble) value of a home. However, market forces often tend for homes to sell for very different prices, a fact that has been hurting LHBA operations. Many think a new pricing technique would be useful.
+
+Additionally, market conditions have changed the real estate pricing structure as a result of a crisis. In fact, there are contentions that pricing radically changed from before the crisis (during a bubble) and after. Some executives are worried that bubbles are the reason prices were different than assessed values, but now that the bubble has "burst," perhaps their business as usual approach will once again be sufficient. Lots of LHBA stakeholders understand county assessed values and don't want to rely on a model that they don't understand. Therefore any model built will need to be explainable to these stakeholders. 
+
+#### **Assignment**
+
+1.  To the best of your ability, strive develop a clear description of the LHBA's big-picture business problem. Then define some more clearly defined sub-problems that would be more specific questions or problems whose solution would be inline with solving LHBA's problem.
+
+2.  Write 3 high quality questions you would want to ask LHBA stakeholders to follow up and get more information or insight into their business.
+
+3.  Translate LHBA's framed business problem into an analytics problem (i.e., numbers/measures to calculate, things to predict, how to visualize or present those things to affect a decision, etc.)
+
+4.  Make sure to connect your business / analytic problems to decisions that need to be made and ask yourself if the "data science" will improve the decision and what the value of the improved decision making could be.
+
+5.  Write a couple of paragraphs describing how CRISP-DM would apply to the process of providing LHBA with a solution.
+
+6.  Prepare the data as necessary and train a model to predict home selling prices, making sure to evaluate its performance on the test data and interpret the error and its meaning for LHBA operations.
