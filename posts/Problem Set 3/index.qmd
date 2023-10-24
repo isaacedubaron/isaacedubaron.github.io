@@ -2,7 +2,7 @@
 title: "Problem Set 3"
 author: "Isaac Baron"
 date: "2023-10-08"
-output: html_document
+format: html
 ---
 
 #### **Assignment**
@@ -17,7 +17,6 @@ library(GGally)
 ```
 
 ```{r}
-install.packages("rpart.plot")
 library(rpart.plot)
 ```
 
@@ -128,8 +127,6 @@ trainIndex <- createDataPartition(Toycor$Price, p = 0.7, list = FALSE)
 train_data <- Toycor[trainIndex, ]
 test_data <- Toycor[-trainIndex, ]
 
-
-
 ```
 
 7\. Based on your results and relationships in questions (4) and (5), build a regression tree model to predict car prices. With the data Toycor_data Make sure to conduct cross validation to evaluate the model and choose the best cost complexity parameter for this problem (use default values for minsplit, minbucket, maxdepth, etc. But choose grid of cp values to tune over). Use rpart.plot to view your tree and discuss its complexity, usefulness, etc. What role is pre-pruning and post-pruning playing here?
@@ -144,14 +141,89 @@ dt1
 ```
 
 ```{r}
-dt1 <- dt1
 
-rpart.plot:rpart.plot(dt1)
+# Define a formula for the model
+formula <- Price ~ .
 
+# Set up a grid of 'cp' values to tune over
+cp_grid <- seq(0, 0.1, by = 0.01)
+
+# Create a train control object for cross-validation (e.g., 10-fold)
+ctrl <- trainControl(method = "cv", number = 10)
+
+# Train the regression tree model and choose the best 'cp' value
+dt_model <- train(
+  formula,
+  data = train_data,
+  method = "rpart",
+  trControl = ctrl,
+  tuneGrid = data.frame(cp = cp_grid),
+  metric = "RMSE"
+)
+
+# View the best 'cp' value and summary
+cat("Best cp value:", dt_model$bestTune$cp, "\n")
+printcp(dt_model$finalModel)
+
+# Plot the best tree using rpart.plot
+best_tree <- rpart(formula, data = train_data, control = rpart.control(cp = dt_model$bestTune$cp))
+rpart.plot(best_tree, box.palette = "auto")
 ```
 
 8\. Look at the feature importance (using permuted feature importance in "iml" package, with loss = "rmse" and compare = "ratio") and determine which features have the biggest effect, and which might be okay to remove.
 
+```{r}
+# Load the necessary libraries
+library(caret)
+
+# Feature importance using caret's rpart method
+feature_importance <- varImp(dt1, scale = FALSE)
+
+# View feature importance
+print(feature_importance)
+
+
+
+
+```
+
 9\. Parsimony is about obtaining the simplest model possible, without oversimplifying. Remove a few of the less useful features and retrain / cross validate / tune your tree.
 
+```{r}
+train_data <- train_data %>% select(-Tow_Bar,-Automatic,-Metallic_Rim,-Weight,-CC,-Power_Steering)
+test_data <- test_data %>% select(-Tow_Bar,-Automatic,-Metallic_Rim,-Weight,-CC,-Power_Steering)
+
+# Retrain the regression tree model with cross-validation
+dt2 = train(Price ~ .,
+             data = train_data,
+             method = "rpart",
+             trControl = trainControl(method = "cv", number = 10),
+             metric = "RMSE")
+
+
+```
+
 10\. Use the model resulting from question 9 and test predictions on the testing data. Compare the cross validation error and and testing data. Spend some time interpreting what this prediction error means for your pricing model and its use for CorollaCrowd.
+
+```{r}
+# Predict on the testing data using the model from step 9
+test_predictions2 <- predict(dt2, newdata = test_data)
+
+# Calculate RMSE on the testing data
+test_rmse2 <- sqrt(mean((test_predictions2 - test_data$Price)^2))
+
+# Cross-validation RMSE from the model in step 9
+cv_rmse2 <- dt2$results$RMSE
+
+# Compare cross-validation error and testing error
+cat("Cross-Validation RMSE:", cv_rmse2, "\n")
+cat("Testing RMSE:", test_rmse2, "\n")
+
+# Interpretation of prediction error:
+# Compare the cross-validation RMSE with the testing RMSE. A lower RMSE indicates better predictive performance.
+# Evaluate whether the testing RMSE is acceptable for your application and consider potential improvements if necessary.
+
+
+
+
+```

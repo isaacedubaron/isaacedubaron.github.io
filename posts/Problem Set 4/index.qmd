@@ -16,44 +16,7 @@ To evaluate the performance of the classifier, NVO should consider measures from
 
 4\. Build a logistic LASSO model using cross-validation on the training data to select the best �. View the coefficients at that chosen � and see what features are in the model.
 
-```{r}
-
-install.packages("glmnet")
-# Load necessary libraries
-library(readr)
-library(caret)
-library(glmnet)
-
-# Read the data
-donors <- read_csv("donors.csv")
-
-# Data Cleaning and Preprocessing (if not done already)
-
-# Data Partitioning
-set.seed(42) # for reproducibility
-trainIndex <- createDataPartition(donors$TARGET_B, p = 0.7, 
-                                  list = FALSE,
-                                  times = 1)
-trainData <- donors[trainIndex, ]
-testData <- donors[-trainIndex, ]
-
-# Create matrices for model training
-x_train <- model.matrix(TARGET_B ~ ., data = trainData)
-y_train <- trainData$TARGET_B
-x_test <- model.matrix(TARGET_B ~ ., data = testData)
-y_test <- testData$TARGET_B
-
-# Perform cross-validated LASSO logistic regression
-lasso_cv <- cv.glmnet(x_train, y_train, alpha = 1, family = "binomial")
-
-# Find the best lambda (smallest deviance)
-best_lambda <- lasso_cv$lambda.min
-
-# Build the final logistic LASSO model with the best lambda
-lasso_model <- glmnet(x_train, y_train, alpha = 1, family = "binomial", lambda = best_lambda)
-
-# View the coefficients for the features in the selected model
-coef(lasso_model)
+```{}
 ```
 
 5\. Build a decision tree model using cross-validation on the training data to select the best `cp` value. Use `rpart.plot()` to view the decision tree. What key features does it use?
