@@ -14,9 +14,22 @@ To evaluate the performance of the classifier, NVO should consider measures from
 
 *After perusing and cleaning the data, decide on the most useful features and build the two classification models - remembering to follow proper principles (i.e., data partitioning, cross validation, etc.).*
 
+```{r}
+rm(list = ls())
+library(tidyverse)
+library(glmnet)
+library(lubridate)
+library(caret)
+library(dummy)
+
+donors = read_csv('donors.csv') 
+  
+  
+```
+
 4\. Build a logistic LASSO model using cross-validation on the training data to select the best �. View the coefficients at that chosen � and see what features are in the model.
 
-```{}
+```         
 ```
 
 5\. Build a decision tree model using cross-validation on the training data to select the best `cp` value. Use `rpart.plot()` to view the decision tree. What key features does it use?
