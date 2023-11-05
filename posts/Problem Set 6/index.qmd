@@ -12,6 +12,7 @@ library(caret)
 library(performanceEstimation)
 library(PRROC)
 library(rpart)
+library(rpart.plot)
 ```
 
 ```{r}
@@ -94,6 +95,7 @@ plot(tree)
 
 ```{r}
 rpart.plot(tree$finalModel)
+
 ```
 
 ## Best Tuned Random Forest
