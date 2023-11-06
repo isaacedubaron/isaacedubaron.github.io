@@ -1,0 +1,228 @@
+Problem Set 8
+QMBE 3740: Data Mining
+Module: Association Rules
+Part 1
+**Question 1**
+You work in a hospital and have access to patient medical records. You decide to use association rules on a variety of datasets available to you. In this context, what are examples of association rules that you might discover that fit into each of the following categories?
+1. Actionable - Patients that are smokers should be screened for lung disease
+2. Trivial - Gender records are normally consistent
+3. Inexplicable - Link between certain vaccines and heart disease
+
+**Question 2**
+Think of an organization where you currently work, have worked in the past, or an organization you are
+familiar with (like a school, community group, etc.). What is an application of association rules that might be useful in that environment?
+
+In a financial planning group, association rules can be applied to gain insights into clients' financial behaviors and needs. One useful application is:
+
+**Cross-Selling and Client Segmentation:** Use association rules to identify patterns and associations in clients' financial behaviors, such as investment preferences, risk tolerance, or life events. For example, you might discover that clients who invest in a certain type of asset are more likely to be interested in a specific type of insurance product. This information can be used to cross-sell related financial products and services.
+
+-   If clients have a high risk tolerance, they are likely to be interested in equity investments. This rule can inform advisors to offer equity-based investment options to such clients.
+
+-   Clients who have recently experienced major life events like marriage or childbirth may have an increased interest in life insurance policies. This rule can help tailor discussions with these clients about insurance needs.
+
+By leveraging association rules in this way, financial planning groups can provide more personalized and relevant financial advice to clients, leading to improved customer satisfaction and potentially increased revenue through cross-selling opportunities.
+
+**Question 3**
+Continue to explore the groceries.csv dataset that we used in class and that was presented in the Chapter
+11 case study. Answer the following questions.
+a What are the 10 least frequently purchased items?
+
+|                  |              |     |
+|------------------|--------------|-----|
+|                  |              |     |
+| organic products | 0.0016268429 |     |
+| decalcifier      | 0.0015251652 |     |
+| honey            | 0.0015251652 |     |
+| cream            | 0.0013218099 |     |
+| frozen fruits    | 0.0012201322 |     |
+| hair spray       | 0.0011184545 |     |
+| rubbing alcohol  | 0.0010167768 |     |
+| liqueur          | 0.0009150991 |     |
+| make up remover  | 0.0008134215 |     |
+| salad dressing   | 0.0008134215 |     |
+
+b If you change the minimum rule length to 3, how many rules to you generate? What if you change it to 4?
+
+Minlen = 3 : 16 Rules
+
+Minlen = 4 : 0 Rules
+(Use the same support / confidence thresholds used in the case study)
+c Change the minimum rule length back to 2 and produce a list of rules involving either soda or whipped/sour
+cream (you\'ll need to study the subset() function)
+
+groceryrules %\>%
+
+subset( !items %ain% c("soda", "whipped/sour cream") ) %\>%
+
+sort(by = "lift") %\>%
+
+inspect()
+**Part 2**
+Use the Market_Basket_Optimisation.csv dataset provided on Canvas and perform association rule mining
+as we did in class with both the groceries and lastfm datasets. Perform the following tasks and answer the
+related questions.
+
+```{r setup, include=FALSE}
+rm(list = ls())
+library(tidyverse)
+library(arules)
+library(knitr)
+library(kableExtra)
+library(ggthemes)
+library(arulesViz)
+```
+
+1. Read the transactions into R.
+
+```{r}
+Market_Basket_Optimisation = read_csv("Market_Basket_Optimisation.csv")
+```
+
+```{r}
+spec(Market_Basket_Optimisation)
+```
+
+2. Use the summary() function to answer the questions:
+
+```{r}
+s = summary(Market_Basket_Optimisation)
+print(s)
+```
+
+• How many transactions are in the data?
+7501 Transactions
+
+```{r}
+MBOTrans = read.transactions("Market_Basket_Optimisation.csv", sep=",")
+summary(MBOTrans)
+```
+
+• How many distinct items are in the data? Using the formula used in class (and in the book), calculate the number of possible itemsets we would theoretically have to evaluate in a brute force
+approach. There are 119 distinct items in the data. Theoretically we would have to evaluate 8.03469e+59 itemsets in a brute force approach.
+
+```{r}
+2^199-1
+
+```
+
+3. Using the summary() function output, create a graph showing the distribution of transaction sizes in
+the data.
+
+```{r}
+sizes = MBOTrans@length
+plot(sizes, main="Transaction Sizes", 
+     lw=6, col="aquamarine3",
+     xlab="",
+     ylab="")
+```
+
+4. Using the itemFrequency() function, create a dataset of items and their frequencies and determine the
+ten most frequent items, and the ten least frequent items.
+
+10 Most Frequent Items
+
+|                   |              |     |     |     |
+|:------------------|-------------:|-----|-----|-----|
+| mineral water     | 0.2383682176 |     |     |     |
+| eggs              | 0.1797093721 |     |     |     |
+| spaghetti         | 0.1741101187 |     |     |     |
+| french fries      | 0.1709105453 |     |     |     |
+| chocolate         | 0.1638448207 |     |     |     |
+| green tea         | 0.1321157179 |     |     |     |
+| milk              | 0.1295827223 |     |     |     |
+| ground beef       | 0.0982535662 |     |     |     |
+| frozen vegetables | 0.0953206239 |     |     |     |
+| pancakes          | 0.0950539928 |     |     |     |
+
+10 Least Frequent Items
+
+|                  |              |     |     |     |
+|------------------|--------------|-----|-----|-----|
+|                  |              |     |     |     |
+| hand protein bar | 0.0051993068 |     |     |     |
+| salad            | 0.0049326756 |     |     |     |
+| shampoo          | 0.0049326756 |     |     |     |
+| asparagus        | 0.0047993601 |     |     |     |
+| cauliflower      | 0.0047993601 |     |     |     |
+| corn             | 0.0047993601 |     |     |     |
+| babies food      | 0.0045327290 |     |     |     |
+| sandwich         | 0.0045327290 |     |     |     |
+| dessert wine     | 0.0043994134 |     |     |     |
+| ketchup          | 0.0043994134 |     |     |     |
+
+```{r}
+MBOTrans_frequency = tibble(
+  Items = names(itemFrequency(MBOTrans)),
+  Frequency = itemFrequency(MBOTrans)
+)
+
+MBOTrans_frequency %>%
+  arrange(desc(Frequency)) %>%
+  slice(1:119)
+```
+
+```{r}
+MBOTrans_frequency %>%
+  select(Frequency) %>%
+  summary()
+```
+
+5. Use descriptives statistics on the item frequencies to determine a reasonable support threshold (use
+confidence=0.25 and minlen = 2) and generate the association rules using the apriori algorithm.
+
+```{r}
+MBOTrans_rules = apriori(MBOTrans,
+                       parameter = list(
+                         support = 0.007,
+                         confidence = 0.25,
+                         minlen =2
+                       )
+                       )
+```
+
+```{r}
+summary(MBOTrans_rules)
+```
+
+6. Evaluate the rules and answer:
+• How many association rules were generated?
+
+There were 200 association rules generated
+• How many different rule lengths are there and how many rules are in each length?
+
+There are 5 different rule lengths are there are 81 in the LHS and 119 in the RHS.
+• Printout the top 12 association rules by confidence.
+
+```{r}
+MBOTrans_rules %>%
+  sort(by = "confidence") %>%
+  head(n = 12) %>%
+  inspect()
+```
+
+• Printout the top 12 association rules by lift.
+
+```{r}
+MBOTrans_rules %>%
+  sort(by = "lift") %>%
+  head(n = 12) %>%
+  inspect()
+```
+
+7. Using the subset() function, printout the top 10 association rules by lift, that do not include the 6 most
+frequent items.
+
+```{r}
+MBOTrans_rules %>%
+  subset(!rhs %in% c("mineral water", "eggs", "spaghetti", "french fries", "chocolate", "green tea")) %>%
+  sort(by = "lift") %>%
+  head(n = 12) %>%
+  inspect()
+```
+
+8. Discuss a couple of the rules you find most interesting and explain how you think they might be used
+in a retail context.
+
+Whole wheat pasta and olive oil are together in nearly 30% of transactions. If food selling establishments marketed their olive oil next to their pasta section, customers are likely to purchase it when they are there to purchase pasta
+
+Herb and pepper and ground beef are in a little bit more than 30% of transactions. These often go together when cooking. Although one probably purchases beef more consistently than the seasoning itself. When purchasing seasoning they are more than 30% likely to also have purchased ground beef.
