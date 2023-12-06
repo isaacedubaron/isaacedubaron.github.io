@@ -1,43 +1,939 @@
-The National Veterans Organization (NVO) needs help analyzing donor responses to previous collection efforts. They'd like to improve the amount of responses they get, as well as the response rate. They've provided some historical data from their database that you can use to analyze and build a classification model predicting whether a person will respond to a mailing.  
+---
+title: "Problem Set 4"
+author: "Isaac Baron"
+date: "2023-10-08"
+format: html
+---
 
-1\. Write a paragraph explaining why classification is the right approach for the NVO's problem.
+
+
+#The National Veterans Organization (NVO) needs help analyzing donor responses to previous collection efforts. They'd like to improve the amount of responses they get, as well as the response rate. They've provided some historical data from their database that you can use to analyze and build a classification model predicting whether a person will respond to a mailing.  
+
+#1. Write a paragraph explaining why classification is the right approach for the NVO's problem.
 
 Classification is the right approach for the National Veterans Organization's (NVO) problem because it allows them to categorize potential donors into two distinct groups: those who are likely to respond to their mailing and those who are not. By predicting whether a person will respond to a mailing, the NVO can target their outreach efforts more effectively. This approach enables them to allocate their resources efficiently and personalize their communication strategies. With classification, they can identify individuals who are most receptive to their cause and tailor their messages and incentives accordingly.
 
-2\. Write a paragraph explaining how NVO could use the classifier you build to identify potential donors. Why could it be better than what they've been doing?
+#2. Write a paragraph explaining how NVO could use the classifier you build to identify potential donors. Why could it be better than what they've been doing?
 
 The classifier built by NVO can be used to identify potential donors in a more efficient and targeted manner than their previous methods. By utilizing the classifier, NVO can prioritize individuals who are predicted to have a higher likelihood of responding to their mailings. This approach can save both time and resources by focusing on the most promising prospects, ensuring that their outreach efforts are more cost-effective. Instead of sending mail to a broad and undifferentiated audience, they can direct their campaigns to individuals with a higher probability of becoming donors, increasing the chances of successful fundraising.
 
-3\. Write a paragraph explaining which measures from the confusion matrix you'll use to evaluate the classifier performance and how they relate to important areas like mailer response rate, and maximizing donation opportunities.
+#3. Write a paragraph explaining which measures from the confusion matrix you'll use to evaluate the classifier performance and how they relate to important areas like mailer response rate, and maximizing donation opportunities.
 
 To evaluate the performance of the classifier, NVO should consider measures from the confusion matrix, particularly precision, recall, and the F1 score. Precision will help NVO understand what proportion of the predicted positive responses were indeed correct, ensuring that their resources are not wasted on false positives. Recall, on the other hand, will show how many of the actual donors they successfully captured, preventing missed opportunities. Maximizing donation opportunities is crucial for the NVO, and the F1 score, which balances precision and recall, provides a comprehensive measure of the classifier's effectiveness. These metrics help the NVO improve their mailer response rate by reducing false positives and false negatives, ultimately enhancing their fundraising success.
 
-*After perusing and cleaning the data, decide on the most useful features and build the two classification models - remembering to follow proper principles (i.e., data partitioning, cross validation, etc.).*
+\#*After perusing and cleaning the data, decide on the most useful features and build the two classification models - remembering to follow proper principles (i.e., data partitioning, cross validation, etc.).*
 
-```{r}
-rm(list = ls())
+```{r warning=FALSE, message=FALSE}
+
 library(tidyverse)
-library(glmnet)
-library(lubridate)
-library(caret)
+
+library(corrplot)
+
+library(rpart)
+
+library(rpart.plot)
+
+library(GGally)
+
 library(dummy)
 
-donors = read_csv('donors.csv') 
-  
-  
+library(caret)
+
+library(performanceEstimation)
+
+library(pROC)
+
+library(glmnet)
+
+library(yardstick)
+
+library(DALEX)
+
 ```
 
-4\. Build a logistic LASSO model using cross-validation on the training data to select the best �. View the coefficients at that chosen � and see what features are in the model.
+```{r}
+
+donors_orig <- read.csv("donors.csv")
+
+donors <- read.csv("donors.csv")
+
+```
+
+```{r}
+
+head(donors)
+
+summary(donors)
+
+```
+
+```{r}
+
+(apply(X = is.na(donors), MARGIN = 2, FUN = sum))
+
+sum(!complete.cases(donors))
+
+```
+
+##### Dealing with missing values
+
+Our dataset contains numerous missing values, with 88,455 out of 95,412 observations displaying at least one missing value. To handle this, we'll opt for median imputation for continuous variables like age. For categorical variables, we'll either remove columns or substitute NA values with the most prevalent class.
+
+Specifically, the variables with missing values are:
+
+Numerical variable with NA: age Categorical variables with NA: numberChildren (mostly NA values), income rating, wealth rating (approximately half NA values), urbanicity, socioEconomicStatus, isHomeowner (about half NA values), gender
+
+```{r}
+
+summary(donors$age)
+
+histogram(donors$age)
+
+```
+
+median imputation for age variable:
+
+```{r}
+
+donors <- donors %>%
+
+  mutate(age = ifelse(is.na(age),
+
+                           median(age, na.rm = TRUE),
+
+                           age))
+
+```
+
+```{r}
+
+summary(donors$age)
+
+histogram(donors$age)
+
+```
+
+EDA for categorical variables with NA's:
+
+##### isHomeowner
+
+```{r}
+
+donors %>%
+
+  count(isHomeowner, respondedMailing)
+
+```
+
+The response rate stands at 5.17% for isHomeowner being True, while it's 4.96% for NA values within isHomeowner. Notably, the sole existing value for isHomeowner is True. Even considering the NA values as a distinct category, the response rates for both groups don't show significant differences. Therefore, it's advisable to remove the column.
+
+```{r}
+
+donors <- donors %>%
+
+  select(-isHomeowner)
+
+```
+
+##### numberChildren
+
+```{r}
+
+donors %>%
+
+  count(numberChildren)
+
+```
+
+Most of the values for numberChildren are missing. I will drop the column.
+
+```{r}
+
+donors <- donors %>%
+
+  select(-numberChildren)
+
+```
+
+##### incomeRating
+
+```{r}
+
+incomePred <- donors %>%
+
+  count(incomeRating, respondedMailing) %>%
+
+  group_by(incomeRating) %>%
+
+  mutate(count = sum(n)) %>%
+
+  group_by(respondedMailing) %>%
+
+  mutate(respRate = n/count) %>%
+
+  filter(respondedMailing == TRUE)
+
+incomePred
+
+histogram(donors$incomeRating)
+
+plot(x = incomePred$incomeRating, y = incomePred$respRate)
+
+```
+
+IncomeRating displays a positive correlation with the response rate, warranting the retention of this variable despite its considerable number of NA values. Interestingly, the response rate for the NA values falls between the response rates for incomeLevel 4 and 5, with 5 being the most prevalent value. Substituting the NA values with the mode appears to be a confident approach, unlikely to significantly impact our model's performance.
+
+```{r}
+
+donors <- donors %>%
+
+  mutate(incomeRating = ifelse(is.na(incomeRating),
+
+                           5,
+
+                           incomeRating))
+
+histogram(donors$incomeRating)
+
+```
+
+##### wealthRating
+
+```{r}
+
+wealthPred <- donors %>%
+
+  count(wealthRating, respondedMailing) %>%
+
+  group_by(wealthRating) %>%
+
+  mutate(count = sum(n)) %>%
+
+  group_by(respondedMailing) %>%
+
+  mutate(respRate = n/count) %>%
+
+  filter(respondedMailing == TRUE)
+
+wealthPred
+
+histogram(donors$wealthRating)
+
+plot(x = wealthPred$wealthRating, y = wealthPred$respRate)
+
+```
+
+Deciding whether to impute or exclude this column presents a nuanced challenge compared to the previous scenario. WealthRating demonstrates a positive correlation with the response rate, albeit with more variability compared to IncomeRating. Notably, the mode of the WealthRating variable is 9, the highest possible value, yet the response rate for the NA values differs from that of the 9's.
+
+Considering multicollinearity, WealthRating and IncomeRating might seem synonymous, yet in our dataset, our donors likely consist of older individuals, often veterans, possibly retired with low income but substantial wealth from retirement accounts and other investments. This discrepancy explains the distinct distributions between WealthRating and IncomeRating. Including both won't introduce multicollinearity. However, the variable socioEconomicStatus could potentially overlap with WealthRating, raising multicollinearity concerns.
+
+Ultimately, I've chosen to exclude the column.
+
+```{r}
+
+donors <- donors %>%
+
+  select(-wealthRating)
+
+```
+
+##### urbanicity, socioEconomicStatus, gender
+
+Regarding three categorical variables with relatively low proportions of NA (missing) values, imputation's impact on model accuracy is less concerning. Opting for mode imputation across these variables will be the chosen approach.
+
+```{r}
+
+#getmode <- function(v) {
+
+   #uniqv <- unique(v)
+
+   #uniqv[which.max(tabulate(match(v, uniqv)))]
+
+#}
+
+
+
+donors <- donors %>% 
+
+  mutate(urbanicity = if_else(is.na(urbanicity), 
+
+                         "unknown", 
+
+                         urbanicity)) %>%
+
+  mutate(socioEconomicStatus = if_else(is.na(socioEconomicStatus), 
+
+                         "unknown", 
+
+                         socioEconomicStatus)) %>%
+
+  mutate(gender = if_else(is.na(gender), 
+
+                         "unknown", 
+
+                         gender))
+
+```
+
+##### State
+
+The categorical variable State, presenting 50 levels, potentially imposes excessive influence on the model. Upon testing models both with and without State, the State-less models demonstrate significantly enhanced performance, prompting its removal.
+
+```{r}
+
+donors <- donors %>%
+
+  select(-state)
+
+```
+
+##### Correlation
+
+```{r}
+
+num <- donors %>%
+
+  keep(is.numeric)
+
+corr <- cor(num)
+
+corrplot(corr)
+
+```
+
+Notably, the strongest correlations exist among variables such as smallestGiftAmount, largestGiftAmount, averageGiftAmount, and between numberGifts and yearsSinceFirstDonation.
+
+To refine the model, we'll eliminate smallestGiftAmount, largestGiftAmount, and yearsSinceFirstDonation.
+
+```{r}
+
+donors <- donors %>%
+
+  select(-c("smallestGiftAmount", "largestGiftAmount", "yearsSinceFirstDonation"))
+
+```
+
+##### Scaling
+
+Lasso models demand feature scaling to ensure their sensitivity aligns with the input feature scale
+
+```{r}
+
+normalize <- function(x) {
+
+  return((x-min(x))/(max(x)-min(x)))
+
+}
+
+
+
+donors <- donors %>%
+
+  mutate_at(vars(age, mailOrderPurchases, totalGivingAmount, numberGifts, averageGiftAmount, monthsSinceLastDonation), normalize)
+
+```
+
+##### Dummies
+
+```{r}
+
+donors$incomeRating <- as.factor(donors$incomeRating)
+
+donors_dummies <- dummy(donors)
+
+donors_dummies <- donors_dummies %>%
+
+  mutate_all(as.factor)
+
+donors_num <- donors %>% keep(is.numeric)
+
+donors_bool <- donors %>% select(c("inHouseDonor", "plannedGivingDonor", "sweepstakesDonor", "respondedMailing"))
+
+donors_bool <- donors_bool*1
+
+donors_bool <- donors_bool %>%
+
+  mutate_all(as.factor)
+
+
+
+donors_bool$respondedMailing <- as.factor(donors_bool$respondedMailing)
+
+donors_model <- bind_cols(donors_dummies, donors_num, donors_bool)
+
+```
+
+#### 4. Build a logistic LASSO model using cross-validation on the training data to select the best \$\\lambda\$. View the coefficients at that chosen \$\\lambda\$ and see what features are in the model.
+
+```{r}
+
+set.seed(567)
+
+samp = createDataPartition(donors_model$respondedMailing, p = 0.7, list = FALSE)
+
+lasso_train = donors_model[samp, ]
+
+lasso_test = donors_model[-samp,]
+
+rm(samp)
+
+```
+
+```{r}
+
+#set.seed(567)
+
+#lasso_train_down = downSample(x = select(lasso_train, -respondedMailing),
+
+                         #y = lasso_train$respondedMailing,
+
+                         #yname = "respondedMailing")
+
+#lasso_train_down %>% select(respondedMailing) %>% table()
+
+```
+
+```{r}
+
+set.seed(567)
+
+lasso_train_smote <- smote(respondedMailing ~ .,
+
+                   data = lasso_train,
+
+                   perc.under = 2,
+
+                   perc.over = 3)
+
+
+
+lasso_train_smote %>%
+
+  select(respondedMailing) %>%
+
+  table() 
+
+```
+
+```{r}
+
+#separate predictors and outcome
+
+x <- model.matrix(respondedMailing~., lasso_train_smote)[,-1]
+
+y <- lasso_train_smote$respondedMailing
+
+```
+
+```{r}
+
+set.seed(123) 
+
+cv.lasso <- cv.glmnet(x, y, alpha = 1, family = "binomial")
+
+model <- glmnet(x, y, alpha = 1, family = "binomial",
+
+                lambda = cv.lasso$lambda.min)
+
+#regression coefficients
+
+coef(model)
+
+```
+
+```{r}
+
+#preds
+
+x_test <- model.matrix(respondedMailing ~., lasso_test)[,-1]
+
+probabilities <- model %>% predict(newx = x_test, type="response")
+
+predicted_classes <- ifelse(probabilities > .5, "1", "0")
+
+#accuracy
+
+observed_classes <- lasso_test$respondedMailing
+
+paste0("Model Accuracy: ", mean(predicted_classes == observed_classes))
+
+```
+
+Our model achieves an 88.3% final accuracy, incorporating all variables with non-zero coefficients. Adjusting the threshold below 0.5 would enable more positive predictions, beneficial when aiming to identify numerous potential donors from a restricted list. In this scenario, with the assumption of an almost limitless donor base, maximizing precision becomes pivotal to enhance the campaign's response rate.
+
+```{r}
+
+plot(cv.lasso)
+
+cv.lasso$lambda.min
+
+```
+
+The optimal $\lambda$ is .00070.
+
+```{r}
+
+coef(cv.lasso, cv.lasso$lambda.min)
+
+```
+
+```{r}
+
+table(predicted_classes,observed_classes)
+
+
+
+```
+
+```{r}
+
+plot(roc.glmnet(model, 
+
+                newx = x, 
+
+                newy = y ), 
+
+     type="l")  
+
+
+
+assess <- assess.glmnet(model, newx=x, newy=y)
+
+assess$auc
+
+```
+
+AUC = .602
+
+#### 5. Build a decision tree model using cross-validation on the training data to select the best `cp` value. Use `rpart.plot()` to view the decision tree. What key features does it use?
+
+##### Class Balance
+
+```{r}
+
+donors_model %>% 
+
+  select(respondedMailing) %>%
+
+  table()
+
+  
+
+```
+
+There's an imbalance in our classes, as merely 5.3% of donors responded to the mailing. It's crucial to consider this imbalance within our model.
+
+##### Data Partition
+
+```{r}
+
+set.seed(567)
+
+samp = createDataPartition(donors_model$respondedMailing, p = 0.7, list = FALSE)
+
+train = donors_model[samp, ]
+
+test = donors_model[-samp,]
+
+rm(samp)
+
+```
+
+Check class balance of test and train sets:
+
+```{r}
+
+train %>% select(respondedMailing) %>% table() %>% prop.table()
+
+test %>% select(respondedMailing) %>% table() %>% prop.table()
+
+```
+
+The degree of imbalance is similar.
+
+##### Downsampling
+
+```{r}
+
+set.seed(567)
+
+train_down = downSample(x = select(train, -respondedMailing),
+
+                         y = train$respondedMailing,
+
+                         yname = "respondedMailing")
+
+train_down %>% select(respondedMailing) %>% table()
+
+```
+
+```{r}
+
+set.seed(567)
+
+train_smote = smote(respondedMailing ~ .,
+
+                   data = train,
+
+                   perc.under = 2,
+
+                   perc.over = 1.5)
+
+
+
+train_smote %>%
+
+  select(respondedMailing) %>%
+
+  table() 
+
+```
+
+##### Decision Tree
+
+```{r}
+
+ctrl = caret::trainControl(method = "repeatedcv", number = 10, repeats = 5)
+
+```
+
+```{r}
+
+set.seed(567)
+
+unbalanced_tree = train(respondedMailing ~ .,
+
+                        data = train,
+
+                        method = "rpart",
+
+                        metric = "Kappa",
+
+                        trControl = ctrl,
+
+                        tuneGrid = expand.grid(cp = seq(0.0, 0.03, 0.0005)))
+
+
+
+plot(unbalanced_tree)
+
+```
+
+```{r}
+
+set.seed(567)
+
+down_tree = train(respondedMailing ~ .,
+
+                        data = train_down,
+
+                        method = "rpart",
+
+                        metric = "Kappa",
+
+                        #control = rpart_ctrl,
+
+                        trControl = ctrl,
+
+                        tuneGrid = expand.grid(cp = seq(0.0, 0.03, 0.0005)))
+
+
+
+plot(down_tree)
+
+```
+
+```{r}
+
+set.seed(567)
+
+smote_tree = train(respondedMailing ~ .,
+
+                        data = train_smote,
+
+                        method = "rpart",
+
+                        metric = "Kappa",
+
+                        #control = rpart_ctrl,
+
+                        trControl = ctrl,
+
+                        tuneGrid = expand.grid(cp = seq(0.0, 0.03, 0.0005)))
+
+
+
+plot(smote_tree)
+
+```
+
+```{r}
+
+rpart.plot(unbalanced_tree$finalModel)
+
+
+
+```
+
+```{r}
+
+rpart.plot(down_tree$finalModel)
+
+```
+
+```{r}
+
+rpart.plot(smote_tree$finalModel)
+
+```
+
+#### 6. Evaluate the performance on test data and look at and describe its performance according to your confusion matrix measures.
+
+##### Decision Trees
+
+```{r}
+
+# Get class predictions
+
+unbalanced_test_class = predict(unbalanced_tree, newdata = test, type = "raw")
+
+down_test_class = predict(down_tree, newdata = test, type = "raw")
+
+smote_test_class = predict(smote_tree, newdata = test, type = "raw")
+
+
+
+# Get probability predictions
+
+unbalanced_test_prob = predict(unbalanced_tree, newdata = test, type = "prob")[,2]
+
+down_test_prob = predict(down_tree, newdata = test, type = "prob")[,2]
+
+smote_test_prob = predict(smote_tree, newdata = test, type = "prob")[,2]
+
+```
+
+```{r}
+
+pred_prob = predict(smote_tree, newdata = test, type = "prob")[,2]
+
+pred_class = factor(ifelse(pred_prob > 0.5, "1", "0"))
+
+confusionMatrix(pred_class, test$respondedMailing, positive = "1")
+
+```
+
+```{r}
+
+down_prob = predict(down_tree, newdata = test, type = "prob")[,2]
+
+down_class = factor(ifelse(down_prob > 0.5, "1", "0"))
+
+confusionMatrix(down_class, test$respondedMailing, positive = "1")
+
+
+
+```
+
+The crucial variable influencing the unbalanced and downsampled trees is the averageGiftAmount. Meanwhile, in the SMOTE tree, the pivotal factor is the numberGifts.
+
+```{r}
+
+unbalanced_cv_kappa = mean(unbalanced_tree$results$Kappa)
+
+unbalanced_test_kappa = confusionMatrix(unbalanced_test_class,
+
+                                        test$respondedMailing,
+
+                                        positive = "1")$overall[["Kappa"]]
+
+unbalanced_test_auc = ModelMetrics::auc(test$respondedMailing, unbalanced_test_prob)
+
+
+
+down_cv_kappa = mean(down_tree$results$Kappa)
+
+down_test_kappa = confusionMatrix(down_test_class,
+
+                                  test$respondedMailing,
+
+                                  positive = "1")$overall[["Kappa"]]
+
+down_test_auc = ModelMetrics::auc(test$respondedMailing, down_test_prob)
+
+
+
+smote_cv_kappa = mean(smote_tree$results$Kappa)
+
+smote_test_kappa = confusionMatrix(smote_test_class,
+
+                                   test$respondedMailing,
+
+                                   positive = "1",)$overall[["Kappa"]]
+
+smote_test_auc = ModelMetrics::auc(test$respondedMailing, smote_test_prob)
+
+
+
+```
+
+```{r}
+
+tibble("CV Kappa" = c(unbalanced_cv_kappa, down_cv_kappa, smote_cv_kappa),
+
+       "Test Kappa" = c(unbalanced_test_kappa, down_test_kappa, smote_test_kappa),
+
+       "Test AUC" = c(unbalanced_test_auc, down_test_auc, smote_test_auc),
+
+       "Tree" = c("Unbalanced", "Down", "SMOTE")) %>%
+
+  column_to_rownames(var = "Tree")
+
+```
+
+#### 7. Create a ROC plot (with AUC) to compare the two model's performance and explain to NVO what the plot tells you.
+
+```{r, warning=FALSE}
+
+par(pty="s")
+
+unbalanced_roc = roc(test$respondedMailing ~ unbalanced_test_prob, 
+
+                     plot=TRUE, print.auc=TRUE, 
+
+                     col="green", lwd=3, legacy.axes=TRUE)
+
+down_roc = roc(test$respondedMailing ~ down_test_prob,
+
+               plot=TRUE, print.auc=TRUE, print.auc.y=0.4,
+
+               col = "red", lwd=3, legacy.axes=TRUE, add=TRUE)
+
+smote_roc = roc(test$respondedMailing ~ smote_test_prob,
+
+                plot=TRUE, print.auc=TRUE, print.auc.y=0.3,
+
+                col = "yellow", lwd=3, legacy.axes=TRUE, add=TRUE)
+
+
+
+legend("bottomright", legend=c("Unbalanced Data", "Downsampled Data", "SMOTE Data"),
+
+       col = c("green", "red", "yellow"), cex = .55, lwd=3)
+
+
+
+
+
+```
+
+The ROC/AUC chart offers insight into the model's ability to differentiate between positive and negative cases. An ideal ROC curve closely follows the upper-left corner of the plot, denoting a high True Positive Rate (TPR) and a low False Positive Rate (FPR). The AUC represents the area beneath this curve; a larger AUC indicates better performance, where an AUC of .5 signifies random selection and an AUC of 1 signifies flawless classification.
+
+Among the decision trees, the highest AUC resulted from the downsampled data, registering at .576. However, this performance isn't significantly better than random selection. Comparatively, the AUC for the lasso logistic regression model stood at .602, only slightly superior to the decision tree on downsampled data.
+
+#### 8. Pick the best performing model, and view its precision recall chart and its cumulative gain chart.
+
+```{r}
+
+xy <- data.frame(x,y)
+
+xyp <- as.data.frame(cbind(xy$y,probabilities))
+
+xyp$V1 <- as.factor(xyp$V1)
+
+
+
+pr_curve(xyp, V1, s0) %>%
+
+  ggplot(aes(x = recall, y = precision)) +
+
+  geom_path() +
+
+  coord_equal() +
+
+  theme_bw()
+
+```
+
+```{r}
+
+test$respondedMailing <- as.numeric(test$respondedMailing)
+
+down_explain = DALEX::explain(model = down_tree,
+
+                               data = test,
+
+                               y = test$respondedMailing=="1",
+
+                               type='classification')
+
+
+
+
+
+down_perf = DALEX::model_performance(down_explain, cutoff = 0.5)
+
+```
+
+```{r}
+
+p1 = plot(down_perf, geom = "prc")
+
+p2 = plot(down_perf, geom = "gain")
+
+p1
+
+p2
+
+```
+
+```{r, eval=FALSE}
+
+##the predict function doesn't work for my logistic regression model
+
+#lasso_explain = DALEX::explain(model = model,
+
+                              # data = lasso_test[,-1],
+
+                              # y = lasso_test$respondedMailing=="1",
+
+                              # type='classification')
+
+
+
+
+
+#lasso_perf = DALEX::model_performance(lasso_explain, cutoff = 0.5)
+
+```
+
+#### 9. Use the charts from parts 6 and 7 to describe how the model should perform for NVO and what it could mean if they do a mailer campaign for 50,000 people.
+
+```{r}
+
+mean(donors_orig$averageGiftAmount)
+
+length(which(donors_orig$respondedMailing == "TRUE")) / length(donors_orig$respondedMailing)
+
+```
+
+The standard cost for each mailer is approximately \$1, while the mean average gift from donors stands at \$13.35. Employing the original response rate of 5.076%, a campaign targeting 50,000 individuals would result in an expenditure of \$50,000, yielding \$33,882 in donations (calculated as 13.35 \* 50,000 \* 0.05076).
+
+Alternatively, employing a campaign guided by a lasso logistic regression model, the response rate computes as 9.11%, calculated using the formula true positive / all predicted positives, resulting in a donation amount of \$60,809 for the same \$50,000 campaign cost. This generates a profit of \$10,809. However, utilizing this model, only 8.13% (2,327 out of 28,622) of potential donors received mail. To conduct a campaign targeting 50,000 donors, a list comprising roughly 615,000 donors would be necessary. In case the existing pool of potential donors falls short, options include procuring a new list from a data brokerage or adjusting the positive prediction threshold, albeit at the cost of precision and subsequent campaign profitability. I'd suggest NVO consider a smaller mailer campaign or explore avenues to enhance donations or reduce mailer expenses.
+
+The cumulative gains chart indicates a direct correlation between the positive rate and the true positive rate, allowing for scaling up the mailer campaign without compromising precision.
+
+Regarding the precision-recall chart, its almost-horizontal line suggests that increasing recall/sensitivity doesn't lead to a loss in precision. #4. Build a logistic LASSO model using cross-validation on the training data to select the best �. View the coefficients at that chosen � and see what features are in the model.
 
 ```         
 ```
 
-5\. Build a decision tree model using cross-validation on the training data to select the best `cp` value. Use `rpart.plot()` to view the decision tree. What key features does it use?
+#5. Build a decision tree model using cross-validation on the training data to select the best `cp` value. Use `rpart.plot()` to view the decision tree. What key features does it use?
 
-6\. Evaluate the performance on test data and look at and describe its performance according to your confusion matrix measures.
+#6. Evaluate the performance on test data and look at and describe its performance according to your confusion matrix measures.
 
-7\. Create a ROC plot (with AUC) to compare the two model's performance and explain to NVO what the plot tells you.
+#7. Create a ROC plot (with AUC) to compare the two model's performance and explain to NVO what the plot tells you.
 
-8\. Pick the best performing model, and view its precision recall chart and its cumulative gain chart.
+#8. Pick the best performing model, and view its precision recall chart and its cumulative gain chart.
 
-9\. Use the charts from parts 6 and 7 to describe how the model should perform for NVO and what it could mean if they do a mailer campaign for 50,000 people.
+#9. Use the charts from parts 6 and 7 to describe how the model should perform for NVO and what it could mean if they do a mailer campaign for 50,000 people.
