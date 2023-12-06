@@ -286,7 +286,7 @@ I believe that the features represented in the data do make sense. The blue line
 
 **Step 9**
 
-**Discuss what is means in this case to train or \"fit\" a model to the data you prepared.**
+**Discuss what is means in this case to train or "fit" a model to the data you prepared.**
 
 Fitting a model refers to the process of using a dataset to teach a model how to make predictions or decisions. The model learns patterns, relationships, and rules from the training data so that it can generalize and make predictions on new, unseen data. This applies to this problem set because we is converted all categorical variables into dummy variables. We used these dummy variables to make predictions.
 
