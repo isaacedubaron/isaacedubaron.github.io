@@ -1,5 +1,6 @@
 ---
-title: "Problem Set 9"
+title: Problem Set 9
+author: Isaac Baron
 format: html
 editor: visual
 ---
@@ -145,10 +146,12 @@ ggplot(centers) +
 Part 3 Segmenting the Bath soap Customers
 
 ```{r}
-soap = read_csv("BathSoapHousehold.csv") %>%
+soap_full = read_csv("BathSoapHousehold.csv") %>%
   mutate_all(.funs = scale0) %>%
-  select(CHILD, Affluence_Index)
-  
+  rename(AffluenceIndex = `Affluence Index`)
+
+soap = soap_full %>%
+  select(CHILD, AffluenceIndex)
 ```
 
 ```{r}
@@ -186,7 +189,7 @@ factoextra::fviz_cluster(soap_clust_3, soap, geom = c("point") )
 ```
 
 ```{r}
-soap %>%
+soap_full %>%
   mutate(cluster = soap_clust_3$cluster) %>%
   group_by(cluster) %>%
   summarise_at(vars(Value, 'Total Volume'),funs(mean))

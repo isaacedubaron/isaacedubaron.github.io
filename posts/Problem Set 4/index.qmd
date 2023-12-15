@@ -5,8 +5,6 @@ date: "2023-10-08"
 format: html
 ---
 
-
-
 #The National Veterans Organization (NVO) needs help analyzing donor responses to previous collection efforts. They'd like to improve the amount of responses they get, as well as the response rate. They've provided some historical data from their database that you can use to analyze and build a classification model predicting whether a person will respond to a mailing.  
 
 #1. Write a paragraph explaining why classification is the right approach for the NVO's problem.

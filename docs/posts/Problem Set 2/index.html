@@ -493,6 +493,9 @@ season  1  2  3  4  5  6  7  8  9 10 11 12
 <pre><code>Loading required package: Matrix</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'Matrix' was built under R version 4.3.2</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
 <pre><code>
 Attaching package: 'Matrix'</code></pre>
 </div>
@@ -501,48 +504,48 @@ Attaching package: 'Matrix'</code></pre>
 
     expand, pack, unpack</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cv.model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cv.model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>betamin <span class="ot">=</span> <span class="fu">coef</span>(cv.model, <span class="at">select =</span> <span class="st">"min"</span>)</span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>betamin</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>betamin <span class="ot">=</span> <span class="fu">coef</span>(cv.model, <span class="at">select =</span> <span class="st">"min"</span>)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>betamin</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>21 x 1 sparse Matrix of class "dgCMatrix"
-                      seg76
-intercept      7.034803e+03
-temperature    9.669329e+02
-humidity      -2.776661e+03
-windspeed     -1.747421e+03
-season_Winter -7.025787e+02
-season_Spring -2.744094e+01
-season_Summer  5.663014e-01
-season_Fall    2.922998e+02
-holiday_0      3.503767e+02
-holiday_1     -9.256936e-11
-weekday_0     -2.017131e+02
-weekday_1     -5.172234e+01
-weekday_2      .           
-weekday_3      .           
-weekday_4      .           
-weekday_5      .           
-weekday_6      2.385002e+01
-weather_1      2.530664e+02
-weather_2      .           
-weather_3     -1.577724e+03
-temperature2  -4.948863e+02</code></pre>
+                     seg92
+intercept      7195.453092
+temperature     978.427212
+humidity      -2998.915930
+windspeed     -1868.386189
+season_Winter  -728.983968
+season_Spring   -99.053601
+season_Summer    13.472885
+season_Fall     301.913071
+holiday_0       441.471082
+holiday_1         .       
+weekday_0      -264.229412
+weekday_1       -99.165944
+weekday_2        -8.606362
+weekday_3         .       
+weekday_4         .       
+weekday_5         .       
+weekday_6        59.700617
+weather_1       256.311390
+weather_2         .       
+weather_3     -1662.384842
+temperature2   -531.442546</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>bikes <span class="ot">=</span> bikes <span class="sc">%&gt;%</span></span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">pred =</span> <span class="fu">as.numeric</span>(<span class="fu">predict</span>(cv.model, predictors)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>bikes <span class="ot">=</span> bikes <span class="sc">%&gt;%</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">pred =</span> <span class="fu">as.numeric</span>(<span class="fu">predict</span>(cv.model, predictors)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>bikes <span class="sc">%&gt;%</span></span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>rentals, <span class="at">y=</span>pred)) <span class="sc">+</span></span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>bikes <span class="sc">%&gt;%</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>rentals, <span class="at">y=</span>pred)) <span class="sc">+</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -550,14 +553,14 @@ temperature2  -4.948863e+02</code></pre>
 <p><strong>Step 7</strong></p>
 <p><strong>Visualize the actual rentals and the predicted rentals over time.</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(bikes, <span class="fu">aes</span>(<span class="at">x =</span> rentals)) <span class="sc">+</span></span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> rentals, <span class="at">color =</span> <span class="st">"Actual Rentals"</span>), <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> pred, <span class="at">color =</span> <span class="st">"Predicted Rentals"</span>), <span class="at">linewidth =</span> <span class="dv">1</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Actual vs. Predicted Bike Rentals Over Time"</span>,</span>
-<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"rentals"</span>,</span>
-<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Rentals"</span>) <span class="sc">+</span></span>
-<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Actual Rentals"</span> <span class="ot">=</span> <span class="st">"blue"</span>, <span class="st">"Predicted Rentals"</span> <span class="ot">=</span> <span class="st">"red"</span>)) <span class="sc">+</span></span>
-<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(bikes, <span class="fu">aes</span>(<span class="at">x =</span> rentals)) <span class="sc">+</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> rentals, <span class="at">color =</span> <span class="st">"Actual Rentals"</span>), <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> pred, <span class="at">color =</span> <span class="st">"Predicted Rentals"</span>), <span class="at">linewidth =</span> <span class="dv">1</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Actual vs. Predicted Bike Rentals Over Time"</span>,</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"rentals"</span>,</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Rentals"</span>) <span class="sc">+</span></span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Actual Rentals"</span> <span class="ot">=</span> <span class="st">"blue"</span>, <span class="st">"Predicted Rentals"</span> <span class="ot">=</span> <span class="st">"red"</span>)) <span class="sc">+</span></span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -566,7 +569,7 @@ temperature2  -4.948863e+02</code></pre>
 <p><strong>Discuss whether you think the features you have in the data make sense for learning to predict daily bike rentals.</strong></p>
 <p>I believe that the features represented in the data do make sense. The blue line which represents actual rentals is directly correlated to the predictions that are represented in red. The blue line fits within the predictions values for nearly the whole graph.</p>
 <p><strong>Step 9</strong></p>
-<p><strong>Discuss what is means in this case to train or "fit" a model to the data you prepared.</strong></p>
+<p><strong>Discuss what is means in this case to train or “fit” a model to the data you prepared.</strong></p>
 <p>Fitting a model refers to the process of using a dataset to teach a model how to make predictions or decisions. The model learns patterns, relationships, and rules from the training data so that it can generalize and make predictions on new, unseen data. This applies to this problem set because we is converted all categorical variables into dummy variables. We used these dummy variables to make predictions.</p>
 <p><strong>Step 10</strong></p>
 <p><strong>Discuss which preparations you did were required to make the learning algorithm work, and which were not strictly required, but maybe are a good idea.</strong></p>
